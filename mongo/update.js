@@ -40,9 +40,15 @@ async function updateWithIdUpdateFirst(id) {
         .findOneAndUpdate({ _id: id }, { name: 'Node.js Course by Lordvidex', author: 'Lordvidex' });
     return course;
 }
+async function deleteOne(id){
+    const result = await Course.deleteOne({_id: id});
+    return result;
+}
 async function run() {
     //const answer = await updateWithId("5a68fe2142ae6a6482c4c9cb");
-    const answer = await updateWithIdUpdateFirst('5a68fe2142ae6a6482c4c9cb');
-    console.log(answer);
+    // const answer = await updateWithIdUpdateFirst('5a68fe2142ae6a6482c4c9cb');
+    const deleted = await deleteOne("5a68fe2142ae6a6482c4c9cb");
+
+    console.log(deleted);
 }
 run();

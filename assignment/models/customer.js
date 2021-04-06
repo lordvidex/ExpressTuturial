@@ -22,6 +22,7 @@ const customerSchema = new mongoose.Schema({
 
 const Customer = mongoose.model('Customer', customerSchema);
 
+//! functions
 function validateCustomer(body) {
     const schema = Joi.object({
         name: Joi.string().min(3).max(50),
@@ -31,5 +32,19 @@ function validateCustomer(body) {
     return schema.validate(body);
 }
 
+/**
+ * @param {*id} id of customer
+ * @returns null if id is invalid or customer if id is valid
+ */
+ async function getCustomerWithId(id) {
+    try {
+        return await Customer.findById(id).lean();
+    } catch (e) {
+        return null;
+    }
+}
+
 exports.Customer = Customer;
+exports.customerSchema = customerSchema;
 exports.validate = validateCustomer;
+exports.getCustomerWithId = getCustomerWithId;

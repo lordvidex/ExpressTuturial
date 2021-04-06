@@ -1,4 +1,4 @@
-const { Customer, validate } = require('../models/customer');
+const { Customer, validate, getCustomerWithId } = require('../models/customer');
 const express = require('express');
 
 const router = express.Router();
@@ -62,17 +62,5 @@ router.delete('/:id', async (req, res) => {
         res.status(400).send('Invalid customer id');
     }
 })
-//! functions
-/**
- * @param {*id} id of customer
- * @returns null if id is invalid or customer if id is valid
- */
-async function getCustomerWithId(id) {
-    try {
-        return await Customer.findById(id).lean();
-    } catch (e) {
-        return null;
-    }
-}
 
 module.exports = router;

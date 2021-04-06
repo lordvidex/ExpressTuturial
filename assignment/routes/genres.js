@@ -1,5 +1,5 @@
 const express = require('express');
-const { Genre, validate } = require('../models/genre');
+const { Genre, validate, findGenreWithId } = require('../models/genre');
 
 const router = express.Router();
 
@@ -64,13 +64,4 @@ router.put('/:id', async (req, res) => {
     res.send(result);
 })
 
-//! Functions
-
-async function findGenreWithId(id) {
-    try {
-        return await Genre.findById(id).lean();
-    } catch (e) {
-        return null;
-    }
-}
 module.exports = router;

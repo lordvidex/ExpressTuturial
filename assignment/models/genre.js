@@ -20,5 +20,15 @@ function validateGenre(genre) {
     return schema.validate(genre);
 }
 
+async function findGenreWithId(id) {
+    try {
+        return await Genre.findById(id).lean();
+    } catch (e) {
+        return null;
+    }
+}
+
 exports.Genre = Genre;
+exports.genreSchema = genreSchema;
 exports.validate = validateGenre;
+exports.findGenreWithId = findGenreWithId;

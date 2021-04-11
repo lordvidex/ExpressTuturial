@@ -33,7 +33,7 @@ function validateCustomer(body) {
 }
 
 /**
- * @param {*id} id of customer
+ * @param {String} id of customer
  * @returns null if id is invalid or customer if id is valid
  */
  async function getCustomerWithId(id) {

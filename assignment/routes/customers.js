@@ -1,5 +1,7 @@
 const { Customer, validate, getCustomerWithId } = require('../models/customer');
 const express = require('express');
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 
 const router = express.Router();
 
@@ -31,7 +33,7 @@ router.post('/', async (req, res) => {
 })
 
 //! put
-router.put('/:id', async (req, res) => {
+router.put('/:id',auth, async (req, res) => {
     //validate the id provided
     const customer = await getCustomerWithId(req.params.id);
     if (!customer) {
@@ -52,7 +54,7 @@ router.put('/:id', async (req, res) => {
 })
 
 //! delete
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',auth,admin, async (req, res) => {
 
     try {
         const result = await Customer.findByIdAndDelete(req.params.id).lean();

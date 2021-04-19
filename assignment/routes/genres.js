@@ -6,6 +6,7 @@ const { Genre, validate, findGenreWithId } = require('../models/genre');
 const router = express.Router();
 
 router.get('/', async (_, res) => {
+    //* should the mongodb be down, our app doesn't crash because we have an error route
     res.send(await Genre.find().lean());
 });
 

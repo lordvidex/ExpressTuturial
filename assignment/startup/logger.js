@@ -19,5 +19,5 @@ module.exports = function () {
         .add(new winston.transports.Console())
         .exceptions.handle(
             new winston.transports.Console({ colorize: true, prettyPrint: true }),
-            new winston.transports.File({ filename: 'exceptions.log', }));
+            new winston.transports.File({ filename: 'exceptions.log' }));
 }

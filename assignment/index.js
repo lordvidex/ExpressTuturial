@@ -10,4 +10,5 @@ require('./startup/routes')(app);
 
 //! globals
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => winston.info(`Listening on port ${PORT}...`));
+// export server for testing
+module.exports = app.listen(PORT, () => winston.info(`Listening on port ${PORT}...`));

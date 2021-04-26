@@ -1,4 +1,5 @@
 const winston = require('winston');
+const config = require('config');
 require('winston-mongodb');
 require('express-async-errors');
 
@@ -12,7 +13,7 @@ module.exports = function () {
             filename: 'logfile.log',
         }))
         .add(new winston.transports.MongoDB({
-            db: 'mongodb://localhost/vidly',
+            db: config.get('db'),
             options: { useUnifiedTopology: true, },
             level: 'info'
         }))

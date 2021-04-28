@@ -4,13 +4,13 @@
   "description": "Falling in love with JS",
   "main": "index.js",
   "scripts": {
-    "test": "jest --verbose --detectOpenHandles"
+    "test": "jest --verbose --detectOpenHandles --coverage"
   },
   "jest":{
     "testEnvironment": "node"
   },
   "keywords": [],
-  "author": "",
+  "author": "Druid",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",

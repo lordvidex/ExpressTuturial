@@ -4,7 +4,8 @@ const config = require('config');
 module.exports = function () {
     //! start database
     const db = config.get('db');
-    mongoose.set('debug', true);
+    if(process.env.NODE_ENV !== 'test') 
+        mongoose.set('debug', true);
     mongoose.connect(
         db,
         {

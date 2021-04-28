@@ -30,12 +30,11 @@ router.post('/',auth, async (req, res) => {
     }
     // validations have been passed save to db
     let genre = new Genre({ genre: value.genre });
-    console.log(genre);
     genre = await genre.save();
     res.send(genre);
 });
 
-router.delete('/:id',auth, admin, async (req, res) => {
+router.delete('/:id',auth, admin,validateObjectId, async (req, res) => {
     // look for the genre with that id in the db
 
     const deletedGenre = await findGenreWithId(req.params.id);
@@ -49,7 +48,7 @@ router.delete('/:id',auth, admin, async (req, res) => {
 
 });
 
-router.put('/:id',auth, async (req, res) => {
+router.put('/:id',auth,validateObjectId, async (req, res) => {
     let genre = await findGenreWithId(req.params.id);
     if (!genre) {
         res.status(404).send(`The genre with id ${req.params.id} was not found!`);

@@ -1,6 +1,8 @@
 let server;
 const supertest = require('supertest');
+const mongoose = require('mongoose');
 const { Genre } = require('../../../models/genre');
+const { User } = require('../../../models/user');
 
 describe('Genres', () => {
     beforeEach(() => {
@@ -58,4 +60,121 @@ describe('Genres', () => {
             expect(response.body.genre).toBe('genre3');
         })
     });
+    describe('POST /', () => {
+        it('should return status code of 400 if genre is less than 3 characters', async () => {
+            // Given
+            const token = new User().generateAuthToken();
+            // When
+            const response = await supertest(server).post('/api/genres').set('X-Auth-Token', token).send({ genre: 'a' });
+            // Then
+            expect(response.status).toBe(400);
+        })
+        it('should add genre to database if genre is valid', async () => {
+            // Given
+            const token = new User().generateAuthToken();
+            // When
+            await supertest(server).post('/api/genres').set('X-Auth-Token', token).send({ genre: 'genre1' });
+            const genre = await Genre.find({ genre: 'genre1' });
+
+            // Then
+            expect(genre.length).toBeGreaterThanOrEqual(1);
+        })
+        it('should return a response body containing the genre', async () => {
+            // Given
+            const token = new User().generateAuthToken();
+            // When
+            const res = await supertest(server).post('/api/genres').set('X-Auth-Token', token).send({ genre: 'genre1' });
+            // Then
+            expect(res.body).toHaveProperty('_id');
+            expect(res.body).toHaveProperty('genre', 'genre1');
+        });
+    })
+    describe('PUT /:id', () => {
+        let token,genre;
+        beforeEach(async () => {
+            token = new User().generateAuthToken();
+            genre = new Genre({genre: 'genre1'});
+            await genre.save();
+        })
+        it('should return 403 error if id is invalid', async () => {
+            // Given
+            //When
+            const response = await supertest(server)
+                .put('/api/genres/1').
+                set('X-Auth-Token', token);
+            // Then
+            expect(response.status).toBe(400);
+        });
+        it('should return 404 error if id does not exist in db', async () => {
+            // Given
+            const id = new mongoose.Types.ObjectId().toHexString();
+            //When
+            const response = await supertest(server)
+                .put(`/api/genres/${id}`)
+                .set('X-Auth-Token', token);
+            // Then
+            expect(response.status).toBe(404);
+        });
+        it('should return status code of 400 if genre is less than 3 characters', async () => {
+            // Given
+            // When
+            const response = await supertest(server).put(`/api/genres/${genre._id}`).set('X-Auth-Token', token).send({ genre: 'a' });
+            // Then
+            expect(response.status).toBe(400);
+        })
+        it('should edit genre in database if genre is valid', async () => {
+            // Given
+            // When
+            await supertest(server).put(`/api/genres/${genre._id}`).set('X-Auth-Token', token).send({ genre: 'genre_x' });
+            // Then
+            const newGenre = await Genre.find({genre: 'genre_x'});
+            expect(newGenre.length).toBeGreaterThanOrEqual(1);
+            expect(newGenre[0]).toHaveProperty('_id',genre._id);
+            
+        })
+        it('should return a response body containing the new genre data', async () => {
+            // Given
+            // When
+            const res = await supertest(server).put(`/api/genres/${genre._id}`).set('X-Auth-Token', token).send({ genre: 'genre1' });
+            // Then
+            expect(res.body).toHaveProperty('_id',genre._id.toHexString());
+            expect(res.body).toHaveProperty('genre', 'genre1');
+        });
+    })
+    describe('DELETE /:id', () => {
+        let token,genre;
+        beforeEach(async () => {
+            token = new User({isAdmin: true}).generateAuthToken();
+            genre = new Genre({genre: 'genre1'});
+            await genre.save();
+        })
+        
+        it('should return 404 error if id does not exist in db', async () => {
+            // Given
+            const id = new mongoose.Types.ObjectId().toHexString();
+            //When
+            const response = await supertest(server)
+                .delete(`/api/genres/${id}`)
+                .set('X-Auth-Token', token);
+            // Then
+            expect(response.status).toBe(404);
+        });
+        
+        it('should delete genre in database if id is valid', async () => {
+            // Given
+            // When
+            await supertest(server).delete(`/api/genres/${genre._id}`).set('X-Auth-Token', token);
+            // Then
+            const newGenre = await Genre.find({genre: 'genre1'});
+            expect(newGenre.length).toBe(0);
+        })
+        it('should return a response body containing the new genre data', async () => {
+            // Given
+            // When
+            const res = await supertest(server).delete(`/api/genres/${genre._id}`).set('X-Auth-Token', token);
+            // Then
+            expect(res.body).toHaveProperty('_id',genre._id.toHexString());
+            expect(res.body).toHaveProperty('genre', 'genre1');
+        });
+    })
 })

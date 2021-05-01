@@ -1,0 +1,776 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "This is the vidly app API",
+    "version" : "1.0.0",
+    "title" : "Vidly API",
+    "contact" : {
+      "email" : "evans.dev99@gmail.com"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "tags" : [ {
+    "name" : "genres",
+    "description" : "API endpoints for movie genres"
+  }, {
+    "name" : "rentals",
+    "description" : "Customers renting movies"
+  }, {
+    "name" : "users",
+    "description" : "API endpoints for users"
+  }, {
+    "name" : "movies"
+  }, {
+    "name" : "customers",
+    "description" : "API endpoints for movie customers"
+  }, {
+    "name" : "auth"
+  } ],
+  "paths" : {
+    "/api/genres" : {
+      "get" : {
+        "tags" : [ "genres" ],
+        "summary" : "returns all the movie genres",
+        "operationId" : "getGenres",
+        "description" : "Returns all the movie genres in the database\n",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "search results matching criteria",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Genre"
+              }
+            }
+          },
+          "500" : {
+            "description" : "internal server error"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "genres" ],
+        "security" : [ {
+          "UserAuthToken" : [ ]
+        } ],
+        "summary" : "adds a genre item",
+        "operationId" : "postGenres",
+        "description" : "Adds a genre item to the database",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "genre",
+          "description" : "Genre to be added",
+          "schema" : {
+            "properties" : {
+              "genre" : {
+                "type" : "string"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The added genre with it's id",
+            "schema" : {
+              "$ref" : "#/definitions/Genre"
+            }
+          },
+          "400" : {
+            "description" : "invalid input, object invalid"
+          },
+          "409" : {
+            "description" : "an existing item already exists"
+          }
+        }
+      }
+    },
+    "/api/genres/{id}" : {
+      "get" : {
+        "summary" : "get specific genre",
+        "description" : "gets the genre with the specified id",
+        "tags" : [ "genres" ],
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "type" : "string",
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the genre with the id",
+            "schema" : {
+              "$ref" : "#/definitions/Genre"
+            }
+          },
+          "400" : {
+            "description" : "Invalid id"
+          },
+          "404" : {
+            "description" : "Genre not found"
+          },
+          "500" : {
+            "description" : "internal server error"
+          }
+        }
+      },
+      "put" : {
+        "summary" : "edits specific genre",
+        "description" : "edits the genre with the specified id",
+        "tags" : [ "genres" ],
+        "security" : [ {
+          "UserAuthToken" : [ ]
+        } ],
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "type" : "string",
+          "required" : true
+        }, {
+          "in" : "body",
+          "name" : "genre",
+          "schema" : {
+            "properties" : {
+              "genre" : {
+                "type" : "string"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the genre with the id",
+            "schema" : {
+              "$ref" : "#/definitions/Genre"
+            }
+          },
+          "400" : {
+            "description" : "Invalid id"
+          },
+          "401" : {
+            "$ref" : "#/responses/401"
+          },
+          "404" : {
+            "description" : "Genre not found"
+          },
+          "500" : {
+            "description" : "internal server error"
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "deletes a genre",
+        "description" : "deletes the genre with the specified id",
+        "security" : [ {
+          "UserAuthToken" : [ ]
+        } ],
+        "tags" : [ "genres" ],
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "type" : "string",
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the genre with the id",
+            "schema" : {
+              "$ref" : "#/definitions/Genre"
+            }
+          },
+          "400" : {
+            "description" : "Invalid genre id"
+          },
+          "401" : {
+            "$ref" : "#/responses/401"
+          },
+          "403" : {
+            "description" : "Forbidden action"
+          },
+          "404" : {
+            "description" : "Genre not found"
+          },
+          "500" : {
+            "$ref" : "#/responses/500"
+          }
+        }
+      }
+    },
+    "/api/users/me" : {
+      "get" : {
+        "summary" : "get user's data",
+        "description" : "Get all user's data from the database\n",
+        "tags" : [ "users" ],
+        "security" : [ {
+          "UserAuthToken" : [ ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "User successfully gotten",
+            "schema" : {
+              "$ref" : "#/definitions/User"
+            }
+          },
+          "401" : {
+            "$ref" : "#/responses/401"
+          },
+          "500" : {
+            "$ref" : "#/responses/500"
+          }
+        }
+      }
+    },
+    "/api/users" : {
+      "post" : {
+        "tags" : [ "users" ],
+        "description" : "Adding a new user to the database\n",
+        "summary" : "creating new user",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "User",
+          "description" : "The user data to be added to the database\n",
+          "schema" : {
+            "properties" : {
+              "name" : {
+                "type" : "string",
+                "example" : "Jon Snow"
+              },
+              "email" : {
+                "type" : "string",
+                "example" : "jonsnow@north.com"
+              },
+              "password" : {
+                "type" : "string",
+                "example" : "123456derfgbs"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "returns users data and an auth token in the header response\n",
+            "schema" : {
+              "$ref" : "#/definitions/User"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request / User with data already exist\n"
+          },
+          "500" : {
+            "$ref" : "#/responses/500"
+          }
+        }
+      }
+    },
+    "/api/auth/login" : {
+      "post" : {
+        "tags" : [ "auth" ],
+        "summary" : "logs in user",
+        "description" : "logs in already existing user and returns an auth token in the header of the request\n",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "request",
+          "schema" : {
+            "properties" : {
+              "email" : {
+                "type" : "string"
+              },
+              "password" : {
+                "type" : "string"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully logged in"
+          },
+          "400" : {
+            "description" : "Invalid email or password"
+          }
+        }
+      }
+    },
+    "/api/customers" : {
+      "get" : {
+        "tags" : [ "customers" ],
+        "summary" : "returns all customers",
+        "operationId" : "getCustomers",
+        "description" : "Returns all the customers in the database\n",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "fetched data successfully\n",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Customer"
+              }
+            }
+          },
+          "500" : {
+            "description" : "internal server error"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "customers" ],
+        "summary" : "adds a customer to the database",
+        "operationId" : "postCustomer",
+        "description" : "Adds a customer to the database",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "customer",
+          "required" : true,
+          "description" : "Customer to be added",
+          "schema" : {
+            "properties" : {
+              "name" : {
+                "type" : "string"
+              },
+              "phone" : {
+                "type" : "string"
+              },
+              "isGold" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The added customer with it's id",
+            "schema" : {
+              "$ref" : "#/definitions/Customer"
+            }
+          },
+          "400" : {
+            "description" : "invalid input, object invalid"
+          }
+        }
+      }
+    },
+    "/api/customers/{id}" : {
+      "get" : {
+        "summary" : "get specific customer",
+        "description" : "gets the customer with the specified id",
+        "tags" : [ "customers" ],
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "type" : "string",
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the genre with the id",
+            "schema" : {
+              "$ref" : "#/definitions/Customer"
+            }
+          },
+          "400" : {
+            "description" : "Invalid id"
+          },
+          "404" : {
+            "description" : "Customer not found"
+          },
+          "500" : {
+            "description" : "internal server error"
+          }
+        }
+      },
+      "put" : {
+        "summary" : "edits specific customer",
+        "description" : "edits the customer with the specified id",
+        "tags" : [ "customers" ],
+        "security" : [ {
+          "UserAuthToken" : [ ]
+        } ],
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "type" : "string",
+          "required" : true
+        }, {
+          "in" : "body",
+          "name" : "customer",
+          "description" : "customer data to be replaced with old data\n",
+          "schema" : {
+            "properties" : {
+              "name" : {
+                "type" : "string"
+              },
+              "phone" : {
+                "type" : "string"
+              },
+              "isGold" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the new customer with the id",
+            "schema" : {
+              "$ref" : "#/definitions/Customer"
+            }
+          },
+          "400" : {
+            "description" : "Invalid id"
+          },
+          "401" : {
+            "$ref" : "#/responses/401"
+          },
+          "404" : {
+            "description" : "Customer not found"
+          },
+          "500" : {
+            "description" : "internal server error"
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "deletes a customer",
+        "description" : "deletes the customer with the specified id",
+        "security" : [ {
+          "UserAuthToken" : [ ]
+        } ],
+        "tags" : [ "customers" ],
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "type" : "string",
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the customer with the id after successful deletion from the database\n",
+            "schema" : {
+              "$ref" : "#/definitions/Customer"
+            }
+          },
+          "400" : {
+            "description" : "Invalid customer id"
+          },
+          "401" : {
+            "$ref" : "#/responses/401"
+          },
+          "403" : {
+            "description" : "Forbidden action"
+          },
+          "404" : {
+            "description" : "Customer not found"
+          },
+          "500" : {
+            "$ref" : "#/responses/500"
+          }
+        }
+      }
+    },
+    "/api/movies" : {
+      "get" : {
+        "tags" : [ "movies" ],
+        "summary" : "get all movies",
+        "description" : "get all movies in the database",
+        "responses" : {
+          "500" : {
+            "$ref" : "#/responses/500"
+          },
+          "200" : {
+            "description" : "fetched successfully",
+            "schema" : {
+              "$ref" : "#/definitions/Movie"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "movies" ],
+        "summary" : "add new movie",
+        "description" : "add new movie to the database",
+        "parameters" : [ {
+          "in" : "body",
+          "required" : true,
+          "name" : "Movie",
+          "schema" : {
+            "properties" : {
+              "title" : {
+                "type" : "string"
+              },
+              "genreId" : {
+                "type" : "string",
+                "format" : "uuid"
+              },
+              "numberInStock" : {
+                "type" : "integer"
+              },
+              "dailyRentalRate" : {
+                "type" : "number"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "500" : {
+            "$ref" : "#/responses/500"
+          },
+          "400" : {
+            "description" : "Invalid request"
+          },
+          "200" : {
+            "description" : "fetched successfully",
+            "schema" : {
+              "$ref" : "#/definitions/Movie"
+            }
+          }
+        }
+      }
+    },
+    "/api/movies/{id}" : {
+      "parameters" : [ {
+        "in" : "path",
+        "name" : "id",
+        "type" : "string",
+        "required" : true
+      } ],
+      "get" : {
+        "summary" : "returns a specific movie",
+        "description" : "returns a movie from the database with the specified id\n",
+        "tags" : [ "movies" ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "movies" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "Movie",
+          "schema" : {
+            "properties" : {
+              "title" : {
+                "type" : "string"
+              },
+              "genreId" : {
+                "type" : "string",
+                "format" : "uuid"
+              },
+              "numberInStock" : {
+                "type" : "integer"
+              },
+              "dailyRentalRate" : {
+                "type" : "number"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully edited"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "movies" ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully deleted"
+          }
+        }
+      }
+    },
+    "/api/rentals" : {
+      "get" : {
+        "summary" : "get all movie rentals",
+        "description" : "get all movie rentals sorted in descending order of their orderDate\n",
+        "tags" : [ "rentals" ],
+        "responses" : {
+          "200" : {
+            "$ref" : "#/definitions/Rental"
+          }
+        }
+      },
+      "post" : {
+        "summary" : "create a new rental",
+        "description" : "registers a customer ordering a movie \n",
+        "parameters" : [ {
+          "in" : "body",
+          "required" : true,
+          "name" : "Rental",
+          "description" : "Rental",
+          "schema" : {
+            "properties" : {
+              "customerId" : {
+                "type" : "string",
+                "format" : "uuid"
+              },
+              "movieId" : {
+                "type" : "string",
+                "format" : "uuid"
+              }
+            }
+          }
+        } ],
+        "tags" : [ "rentals" ],
+        "responses" : {
+          "200" : {
+            "description" : "success",
+            "schema" : {
+              "$ref" : "#/definitions/Rental"
+            }
+          },
+          "404" : {
+            "description" : "item with id not found"
+          },
+          "400" : {
+            "description" : "Invalid ids"
+          },
+          "409" : {
+            "description" : "Movie not in stock"
+          },
+          "500" : {
+            "$ref" : "#/responses/500"
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Rental" : {
+      "type" : "object",
+      "required" : [ "customer", "movie" ],
+      "properties" : {
+        "customer" : {
+          "$ref" : "#/definitions/Customer"
+        },
+        "movie" : {
+          "$ref" : "#/definitions/Movie"
+        },
+        "dateOut" : {
+          "type" : "string",
+          "format" : "date"
+        },
+        "dateReturned" : {
+          "type" : "string",
+          "format" : "date"
+        },
+        "rentalFee" : {
+          "type" : "number"
+        }
+      }
+    },
+    "Customer" : {
+      "type" : "object",
+      "required" : [ "name", "phone", "_id" ],
+      "properties" : {
+        "_id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "phone" : {
+          "type" : "string",
+          "format" : "phone"
+        },
+        "isGold" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "User" : {
+      "type" : "object",
+      "required" : [ "_id", "name", "email", "password" ],
+      "properties" : {
+        "_id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "email" : {
+          "type" : "string"
+        },
+        "isAdmin" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "Genre" : {
+      "type" : "object",
+      "required" : [ "genre" ],
+      "properties" : {
+        "_id" : {
+          "type" : "string",
+          "format" : "uuid",
+          "example" : "608c676b4cbdbbe5c34c0796"
+        },
+        "genre" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Movie" : {
+      "type" : "object",
+      "required" : [ "title", "genre" ],
+      "properties" : {
+        "_id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "genre" : {
+          "$ref" : "#/definitions/Genre"
+        },
+        "numberInStock" : {
+          "type" : "integer",
+          "default" : 0
+        },
+        "dailyRentalRate" : {
+          "type" : "number",
+          "default" : 0
+        },
+        "title" : {
+          "type" : "string",
+          "example" : "The Terminator"
+        }
+      }
+    }
+  },
+  "responses" : {
+    "401" : {
+      "description" : "User not authenticated",
+      "headers" : {
+        "X-Auth-Token" : {
+          "type" : "string",
+          "description" : "authentication token generated when user is created"
+        }
+      }
+    },
+    "500" : {
+      "description" : "Internal Server Error"
+    }
+  },
+  "securityDefinitions" : {
+    "UserAuthToken" : {
+      "type" : "apiKey",
+      "in" : "header",
+      "name" : "X-Auth-Token"
+    }
+  },
+  "schemes" : [ "https" ],
+  "host" : "shielded-everglades-80429.herokuapp.com",
+  "basePath" : "/"
+}

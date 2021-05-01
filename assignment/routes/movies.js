@@ -56,7 +56,7 @@ router.put('/:id', auth,async (req, res) => {
     // check if id is valid
     const movie = await getMovieWithId(req.params.id);
     if (!movie) {
-        res.status(403)
+        res.status(400)
             .send(`Movie with id ${req.params.id} not found`);
         return;
     }
@@ -65,7 +65,7 @@ router.put('/:id', auth,async (req, res) => {
     // during update, hence we need a new function for PUT
     const { error, value } = validateUpdate(req.body);
     if (error) {
-        req.status(403).send(error.message);
+        req.status(400).send(error.message);
         return;
     }
 

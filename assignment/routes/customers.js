@@ -46,10 +46,8 @@ router.put('/:id',auth, async (req, res) => {
     if (error) {
         res.status(400).send(error.message);
         return;
-    }
-    console.log(value);
+    } 
     const result = await Customer.findByIdAndUpdate(req.params.id, value, { new: true });
-    console.log(result);
     res.send(result);
 })
 

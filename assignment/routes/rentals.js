@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
 
     // client side validations
     if (error) {
-        res.status(403).send(error.message);
+        res.status(400).send(error.message);
         return;
     }
 
@@ -38,7 +38,7 @@ router.post('/', async (req, res) => {
         res.status(404).send(`Movie with id ${value.movieId} not found`);
         return;
     }else if (movie.numberInStock < 1){
-        res.status(400).send('Movie not in stock');
+        res.status(409).send('Movie not in stock');
         return ;
     }
 
